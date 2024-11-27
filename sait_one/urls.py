@@ -19,5 +19,8 @@ from block import views
 
 urlpatterns = [
     #path('admin/', admin.site.urls),
-    path('', views.index)
+    path('', views.index),
+    path('about/', views.about),
+    path('catalog/', views.сatalog),
+    path('contact/', views.contact)
 ]

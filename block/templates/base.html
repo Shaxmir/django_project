@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>SODDOS - {% block title %} HOME {% endblock title %}</title>
+</head>
+<header>
+    <div class="header">
+        <a class="header_link" href="/">Home page</a> | <a class="header_link" href="/about">About me</a> | <a class="header_link" href="/catalog">Catalog</a> | <a class="header_link" href="/contact">My contacts</a>
+    </div>
+</header>
+<body>
+{% comment %}
+{% if auth %}
+<h1 class="wel">Welcome {% auth %}</h1>
+{% else %}
+<h1 class="wel">Welcome. You need to log in or register</h1>
+<input type="submit" value="Log in"> | <input type="submit" value="Register">
+{% endif %}
+{% endcomment %}
+{% block content %} {% endblock content %}
+</body>
+<footer>
+    <div class="footer">
+        <a class="footer_link" href="/">Home page</a><br>
+        <a class="footer_link" href="/about">About me</a><br>
+        <a class="footer_link" href="/catalog">Catalog</a><br>
+        <a class="footer_link" href="/contact">My contacts</a><br>
+    </div>
+    <div>Сейчас: {{ my_date|date:"d.m.Y" }}</div>
+</footer>
+</html>
