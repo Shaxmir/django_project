@@ -8,7 +8,7 @@
 </head>
 <header>
     <div class="header">
-        <a class="header_link" href="/">Home page</a> | <a class="header_link" href="/about">About me</a> | <a class="header_link" href="/catalog">Catalog</a> | <a class="header_link" href="/contact">My contacts</a>
+        <a class="header_link" href="/">Home page</a> <span>|</span> <a class="header_link" href="/about">About me</a> <span>|</span> <a class="header_link" href="/catalog">Catalog</a> <span>|</span> <a class="header_link" href="/contact">My contacts</a>
     </div>
 </header>
 <body>
@@ -29,6 +29,6 @@
         <a class="footer_link" href="/catalog">Catalog</a><br>
         <a class="footer_link" href="/contact">My contacts</a><br>
     </div>
-    <div>Сейчас: {{ my_date|date:"d.m.Y" }}</div>
+    <div class="datatime">Сейчас: {{ my_date|date:"d.m.Y" }}</div>
 </footer>
 </html>

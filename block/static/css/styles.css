@@ -1,5 +1,17 @@
+@keyframes filling {
+  from{
+    background-position: center 25%;
+  }
+  to {
+    background-position: center 50%;
+  }
+}
+body{
+margin: 0px;
+background-image:  url(https://static.pexels.com/photos/4827/nature-forest-trees-fog.jpeg);
+}
 header {
-    background: black;
+    background: #394a51;
     width: 100%
 }
 header .header {
@@ -7,9 +19,14 @@ header .header {
     text-align: center;
     padding: 30px
 }
+header .header span {
+    padding: 5px;
+    color: white;
+    font-size: 20px;
+}
 header .header .header_link {
     text-decoration: none;
-    padding-right: 20px;
+
     list-style: none;
     color: wheat;
     font-size: 24px;
@@ -17,4 +34,80 @@ header .header .header_link {
 header .header .header_link:hover {
     text-decoration: underline;
     color: white;
+}
+footer {
+    background: #394a51;
+    width: 100%;
+    position: fixed; /* Подвал как приклеенный */
+  bottom: 0; /* Фиксация снизу */
+  left: 0; /* К началу слева */
+  right: 0; /* Без отступов справа */
+}
+footer.fixed-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+}
+footer .footer {
+    display: block;
+    text-align: left;
+    padding-left: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+footer .footer .footer_link {
+    text-decoration: none;
+    padding: 20px;
+    list-style: none;
+    color: wheat;
+    font-size: 24px;
+}
+footer .footer .footer_link:hover {
+    text-decoration: underline;
+    color: white;
+}
+footer .datatime{
+    padding: 10px;
+    color: white;
+    text-align: center;
+}
+.contact_title {
+    padding: 10px;
+    text-decoration: underline
+    color:
+}
+
+
+
+.contact_title {
+  background-image:  url(https://static.pexels.com/photos/4827/nature-forest-trees-fog.jpeg);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  color:  #FFFFFF;
+  padding-top: 20px;
+  font-size: 24px;
+  font-family: 'Bungee', cursive;
+  animation: filling 3s ease forwards;
+  text-align: center;
+}
+address {
+    padding: 15px;
+}
+address span{
+  background-image:  url(https://static.pexels.com/photos/4827/nature-forest-trees-fog.jpeg);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  color:  #FFFFFF;
+  padding-top: 20px;
+  font-size: 24px;
+  font-family: 'Bungee', cursive;
+  animation: filling 3s ease forwards;
+}
+address .address_link {
+    padding-left: 20px;
+    text-decoration: none;
+    color: black;
+    text-transform: uppercase;
 }
