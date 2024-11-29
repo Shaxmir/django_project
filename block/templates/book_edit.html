@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %} Books {% endblock title %}
+{% block content %}
+<form method="POST">
+        {% csrf_token %}
+    <label>Название Книги</label><br>
+    <input type="text" name="title" value="{{bookEdit.title}}"/><br>
+    <label>Автор Книги</label><br>
+    <input type="text" name="author" value="{{bookEdit.author}}"/><br>
+    <label>Количество книг</label><br>
+    <input type="number" name="stock" value="{{bookEdit.stock}}"/><br>
+    <label>Цена за одну книгу</label><br>
+    <input type="number" name="price" value="{{bookEdit.price}}"/><br>
+    <input type="submit" value="Сохранить изменения" /><br>
+</form>
+
+
+{% endblock content %}

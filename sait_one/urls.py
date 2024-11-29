@@ -28,5 +28,11 @@ urlpatterns = [
     path('task/create/', views.create),
     path('task/<int:id>/edit/', views.edit),
     path('task/<int:id>/delete/', views.delete),
+    path('books/', views.books),
+    path('books/<int:id>/', views.books),
+    path('books/add_book/', views.add_book),
+    path('books/<str:author>/author/', views.author),
+    path('books/<int:id>/book_edit/', views.book_edit),
+    path('books/<int:id>/sell/', views.sell),
 
 ]

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %} Books {% endblock title %}
+{% block content %}
+<a href="/books/">Назад</a>
+<br>
+<br>
+{% if author.count > 0 %}
+<div class="book_blocks">
+{% for form in author %}
+    <div class="book_block">
+        <h4 class="book_block_title"><a href="{{form.id}}">{{ form.title }}</a></h4><br>
+        <span class="book_block_data">{{ form.published_date }}</span><br>
+        <span class="book_block_text">{{ form.author }}</span><br>
+        <span class="book_block_text">Цена: {{ form.price }}</span> <span class="book_span">|</span> <span class="book_block_text">Остаток: {{ form.stock }}</span>
+        {% if books.count == 1 %}
+        {% if form.stock > 0 %}
+        <br><a href="sell/">Купить книгу</a>
+        {% else %}
+        <br><span class="book_span">Книга кончилась</span>
+        {% endif %}
+        <a href="/book_edit/">Изменить</a>
+        <br><a href="/books">Назад</a>
+        {% else %}
+            {% if form.stock > 0 %}
+            <a href="/books/{{form.id}}/sell">Купить книгу</a>
+            {% else %}
+            <span class="book_span">Книга кончилась</span>
+            {% endif %}
+            <a href="/books/{{form.id}}/book_edit">Изменить</a>
+        {% endif%}
+    </div>
+{% endfor %}
+    {% else %}
+    <h2>В данный момент книг нет. Создайте их!</h2>
+    {% endif %}
+
+</div>
+
+{% endblock content %}

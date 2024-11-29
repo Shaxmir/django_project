@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %} Books {% endblock title %}
+{% block content %}
+<form method="POST" action="add_book/">
+        {% csrf_token %}
+    <label>Название Книги</label><br>
+    <input type="text" name="title" /><br>
+    <label>Автор Книги</label><br>
+    <input type="text" name="author" /><br>
+    <label>Количество книг</label><br>
+    <input type="number" name="stock" /><br>
+    <label>Цена за одну книгу</label><br>
+    <input type="number" name="price"/><br>
+    <input type="submit" value="Сохранить книгу" /><br>
+</form>
+
+{% if books.count > 0 %}
+<div class="book_blocks">
+{% for form in books %}
+    <div class="book_block">
+        <h4 class="book_block_title"><a href="{{form.id}}">{{ form.title }}</a></h4><br>
+        <span class="book_block_data">{{ form.published_date }}</span><br>
+        <span class="book_block_text"><a href="{{form.author}}/author">{{ form.author }}</a></span><br>
+        <span class="book_block_text">Цена: {{ form.price }}</span> <span class="book_span">|</span> <span class="book_block_text">Остаток: {{ form.stock }}</span>
+        {% if books.count == 1 %}
+        {% if form.stock > 0 %}
+        <br><a href="sell/">Купить книгу</a>
+        {% else %}
+        <br><span class="book_span">Книга кончилась</span>
+        {% endif %}
+        <a href="book_edit/">Изменить</a>
+        <br><a href="/books">Назад</a>
+        {% else %}
+            {% if form.stock > 0 %}
+            <a href="{{form.id}}/sell">Купить книгу</a>
+            {% else %}
+            <span class="book_span">Книга кончилась</span>
+            {% endif %}
+            <a href="{{form.id}}/book_edit">Изменить</a>
+        {% endif%}
+    </div>
+{% endfor %}
+    {% else %}
+    <h2>В данный момент книг нет. Создайте их!</h2>
+    {% endif %}
+
+</div>
+
+{% endblock content %}
