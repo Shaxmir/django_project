@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %} Task {% endblock title %}
+{% block content %}
+<form method="POST" action="create/">
+        {% csrf_token %}
+    <label>Название задачи</label><br>
+    <input type="text" name="title" /><br>
+    <label>Текст:</label><br>
+    <textarea name="description"></textarea><br>
+    <input type="submit" value="Сохранить задачу" /><br>
+</form>
+{% if task.count > 0 %}
+<h2>Ваши задачи:</h2> <a href="handle" class="filter_handle">Удалить все просроченные задачи!</a>
+<div class="task_blocks">
+{% for form in task %}
+    <div class="task_block">
+        <h4 class="task_block_title">{{ form.title }}</h4><br>
+        <span class="task_block_data">{{ form.due_data }}</span><br>
+        <span class="task_block_text">{{ form.description }}</span><br>
+        <a href="{{form.id}}/edit">Изменить</a> <span class="chort">|</span> <a href="{{form.id}}/delete">Удалить</a> <span class="chort">|</span> <a href="{{form.id}}/handle">Просрочено</a>
+    </div>
+{% endfor %}
+    {% else %}
+    <h2>В данный момент задач нет. Создайте их!</h2>
+    {% endif %}
+</div>
+    {% endblock content %}

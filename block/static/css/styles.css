@@ -6,9 +6,16 @@
     background-position: center 50%;
   }
 }
+html {
+    margin: 0px;
+    background-image:  url(https://static.pexels.com/photos/4827/nature-forest-trees-fog.jpeg);
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
 body{
-margin: 0px;
-background-image:  url(https://static.pexels.com/photos/4827/nature-forest-trees-fog.jpeg);
+    max-height: 100%;
 }
 header {
     background: #394a51;
@@ -38,13 +45,12 @@ header .header .header_link:hover {
 footer {
     background: #394a51;
     width: 100%;
-    position: fixed; /* Подвал как приклеенный */
+   /* position: fixed;  Подвал как приклеенный */
   bottom: 0; /* Фиксация снизу */
   left: 0; /* К началу слева */
   right: 0; /* Без отступов справа */
 }
 footer.fixed-bottom {
-  position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
@@ -110,4 +116,32 @@ address .address_link {
     text-decoration: none;
     color: black;
     text-transform: uppercase;
+}
+
+.task_blocks {
+
+}
+.task_blocks .task_block {
+    background-color: #ffffe0;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+}
+.task_blocks .task_block a{
+    text-decoration: none;
+    list-style: none;
+    color: green;
+    font-size: 24px;
+}
+.task_blocks .task_block .chort{
+    padding: 5px;
+    color: green;
+    font-size: 20px;
+}
+.task_blocks .task_block .task_block_text {
+    padding-top: 20px;
+    padding-bottom: 10px;
+    display: block;
 }
