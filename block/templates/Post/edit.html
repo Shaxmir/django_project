@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %} Create Post {% endblock title %}
+{% block content %}
+<h1>Редактируем пост</h1>
+<form method="POST">
+        {% csrf_token %}
+    <label>Заголовок:</label><br>
+    <input type="text" name="title" value="{{edit_post.title}}"/><br>
+    <label>Текст:</label><br>
+    <textarea name="content">{{edit_post.content}}</textarea>
+    <input type="submit" value="Опубликовать" /><br>
+</form>
+{% endblock content%}

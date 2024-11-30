@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %} Posts {% endblock title %}
+{% block content %}
+{% if post.count == 1 and post_all.count > 1 %}
+<a href="/post">Назад к постам</a>
+{% endif %}
+{% if post.count > 0 %}
+<div class="post_blocks">
+{% for form in post %}
+    <div class="post_block">
+        <h4 class="post_block_title">
+            {% if post.count == 1 and post_all.count > 1 %}
+            {{ form.title }}
+            {% else %}
+            <a href="{{form.id}}">{{ form.title }}</a>
+            {% endif %}
+        </h4><br>
+        <span class="post_block_data">{{ form.created_at }}</span><br>
+        {% if form.updated_at %}
+            <span class="post_block_data_small" style="font-size: 10px">Изменено: {{ form.updated_at }}</span><br>
+        {% else %}
+            <span class="post_block_data_small" style="font-size: 10px">Изменений пока что не было</span><br>
+        {% endif %}
+        <span class="post_block_text">{{ form.content }}</span><br>
+
+        {% if post.count == 1 and post_all.count > 1%}
+            <a style="color: green; padding: 5px" href="edit_post/">Изменить пост</a>
+            <a style="color: red; padding: 5px" href="delete_post">Удалить</a>
+            {% else %}
+            <a style="color: green; padding: 5px" href="{{form.id}}/edit_post">Изменить пост</a>
+            <a style="color: red; padding: 5px" href="{{form.id}}/delete_post">Удалить</a>
+            {% endif %}
+    </div>
+{% endfor %}
+    <div class="public_post" style="padding: 30px; font-size: 30px"><a href="/post/create_post">Опубликовать новый пост</a></div>
+
+    {% else %}
+    <h2>Постов нет. Создай их здесь <a href="create_post/">ТыК</a></h2>
+    {% endif %}
+</div>
+{% endblock content%}

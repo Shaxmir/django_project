@@ -3,6 +3,8 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from datetime import datetime
 
 from django.template.context_processors import request
+from django.urls import reverse_lazy
+from django.views.generic import UpdateView
 
 from block.management.commands.filters import Command
 from block.models import Tasks, Book, Post
@@ -31,11 +33,13 @@ def books(request, id=None):
 def post(request, id=None):
     if id != None:
         post = Post.objects.filter(id=id)
-        return render(request, 'Post/post.html', {'post': post, 'my_date': datetime.now()})
+        post_all = Post.objects.all()
+        return render(request, 'Post/posts.html', {'post': post, 'post_all': post_all, 'my_date': datetime.now()})
     else:
         post = Post.objects.all()
-        return render(request, 'Post/post.html', {'post': post, 'my_date': datetime.now()})
-#Функции для задачь
+        return render(request, 'Post/posts.html', {'post': post, 'my_date': datetime.now()})
+
+####################Функции для задачь#####################
 
 def handle(request):
     handle_task = Tasks.objects.all()
@@ -73,7 +77,7 @@ def delete(request,id):
         return HttpResponseNotFound('<h2>Ошибочка при удалении</h2>')
 
 
-#Функции для каталога с книгами
+####################Функции для каталога с книгами#######################
 
 def add_book(request):
     if request.method == 'POST':
@@ -109,14 +113,22 @@ def author(request, author):
     author = Book.objects.filter(author=author)
     return render(request, 'author.html',{'author': author, 'my_date': datetime.now()})
 
-#Функции для постов
+################### Функции для постов ############################
+
+
+
+
+
 def create_post(request):
     if request.method == 'POST':
         post = Post()
         post.title = request.POST.get('title')
         post.content = request.POST.get('content')
+        post.updated_at = ''
         post.save()
-    return HttpResponseRedirect('/post')
+        return HttpResponseRedirect('/post')
+    else:
+        return render(request, 'Post/create.html', {'edit_post': edit_post, 'my_date': datetime.now()})
 def edit_post(request, id):
     try:
         edit_post = Post.objects.get(id=id)
@@ -127,13 +139,16 @@ def edit_post(request, id):
             edit_post.save()
             return HttpResponseRedirect('/post')
         else:
-            return render(request, 'Post/create.html', {'edit_post': edit_post, 'my_date': datetime.now()})
+            return render(request, 'Post/edit.html', {'edit_post': edit_post, 'my_date': datetime.now()})
     except Post.DoesNotExist:
         return HttpResponseNotFound("<h2>Ошибочка при редактировании)</h2>")
 def delete_post(request, id):
     try:
         del_post = Post.objects.get(id=id)
-        del_post.delete()
-        return HttpResponseRedirect('/post')
+        if request.method == 'POST':
+            del_post.delete()
+            return HttpResponseRedirect('/post')
+        else:
+            return render(request, 'Post/delete_post.html', {'del_post': del_post, 'my_date': datetime.now()})
     except Post.DoesNotExist:
         return HttpResponseNotFound('<h2>Ошибочка при удалении</h2>')
