@@ -145,3 +145,16 @@ address .address_link {
     padding-bottom: 10px;
     display: block;
 }
+
+.chat {
+    width: 100%
+    padding: 20px;
+}
+.chat .chat_post {
+    margin: 10px;
+    padding: 5px;
+    width: 20%;
+    background: #ff7530;
+    color: white;
+    border-radius: 10px;
+}

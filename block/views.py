@@ -7,8 +7,11 @@ from django.urls import reverse_lazy
 from django.views.generic import UpdateView
 
 from block.management.commands.filters import Command
-from block.models import Tasks, Book, Post
+from block.models import Tasks, Book, Post, Message
 from block.management.commands import filters
+from block.models.message import Author
+
+
 # Create your views here.
 
 
@@ -38,6 +41,20 @@ def post(request, id=None):
     else:
         post = Post.objects.all()
         return render(request, 'Post/posts.html', {'post': post, 'my_date': datetime.now()})
+
+def chat(request):
+    chat = Message.objects.all().order_by('-create_at')
+    aut = Author.objects.all()
+    if request.method == 'POST':
+        author = Author.objects.create(author=request.POST.get('author'))
+        mess = Message(content=request.POST.get('content'))
+        author.message = mess
+        author.message.save()
+        return HttpResponseRedirect('/chat')
+    else:
+
+        return render(request, 'Message/chat.html', {'chat': chat, 'aut': aut, 'my_date': datetime.now()})
+
 
 ####################Функции для задачь#####################
 

@@ -3,12 +3,14 @@
 <html>
 <head>
     <meta charset="utf-8"/>
+    {% block link %}
+    {% endblock link %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
     <title>SODDOS - {% block title %} HOME {% endblock title %}</title>
 </head>
 <header>
     <div class="header">
-        <a class="header_link" href="/">Home page</a> <span>|</span> <a class="header_link" href="/about">About me</a> <span>|</span> <a class="header_link" href="/catalog">Catalog</a> <span>|</span> <a class="header_link" href="/contact">My contacts</a> <span>|</span> <a class="header_link" href="/task">Tasks</a> <span>|</span> <a class="header_link" href="/books">Books</a> <span>|</span> <a class="header_link" href="/post">Posts</a>
+        <a class="header_link" href="/">Home page</a> <span>|</span> <a class="header_link" href="/about">About me</a> <span>|</span> <a class="header_link" href="/catalog">Catalog</a> <span>|</span> <a class="header_link" href="/contact">My contacts</a> <span>|</span> <a class="header_link" href="/task">Tasks</a> <span>|</span> <a class="header_link" href="/books">Books</a> <span>|</span> <a class="header_link" href="/post">Posts</a> <span>|</span> <a class="header_link" href="/chat" style="color: red;">Chat</a>
     </div>
 </header>
 <body>
