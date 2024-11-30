@@ -5,9 +5,8 @@ from datetime import datetime
 from django.template.context_processors import request
 
 from block.management.commands.filters import Command
-from block.models import Tasks
+from block.models import Tasks, Book, Post
 from block.management.commands import filters
-from block.models import Book
 # Create your views here.
 
 
@@ -21,14 +20,21 @@ def contact(request):#contact page
     return render(request, 'contacts.html', context={"my_date": datetime.now()})
 def task(request):
     task = Tasks.objects.all()
-    return render(request, 'task.html', {'task': task,"my_date": datetime.now()})
+    return render(request, 'Tasks/task.html', {'task': task,"my_date": datetime.now()})
 def books(request, id=None):
     if id != None:
         books = Book.objects.filter(id=id)
-        return render(request, 'books.html', {'books': books, 'my_date': datetime.now()})
+        return render(request, 'Books/books.html', {'books': books, 'my_date': datetime.now()})
     else:
         books = Book.objects.all()
-        return render(request, 'books.html', {'books': books, 'my_date': datetime.now()})
+        return render(request, 'Books/books.html', {'books': books, 'my_date': datetime.now()})
+def post(request, id=None):
+    if id != None:
+        post = Post.objects.filter(id=id)
+        return render(request, 'Post/post.html', {'post': post, 'my_date': datetime.now()})
+    else:
+        post = Post.objects.all()
+        return render(request, 'Post/post.html', {'post': post, 'my_date': datetime.now()})
 #Функции для задачь
 
 def handle(request):
@@ -54,7 +60,7 @@ def edit(request, id):
             task_edit.save()
             return HttpResponseRedirect('/task')
         else:
-            return render(request, 'edit.html',{'task_edit':task_edit})
+            return render(request, 'Tasks/edit.html',{'task_edit':task_edit})
     except Tasks.DoesNotExist:
         return HttpResponseNotFound("<h2>Ошибочка при редактировании</h2>")
 
@@ -89,8 +95,8 @@ def book_edit(request, id):
             bookEdit.save()
             return HttpResponseRedirect('/books')
         else:
-            return render(request, 'book_edit.html', {'bookEdit': bookEdit, 'my_date': datetime.now()})
-    except Tasks.DoesNotExist:
+            return render(request, 'Books/book_edit.html', {'bookEdit': bookEdit, 'my_date': datetime.now()})
+    except Book.DoesNotExist:
         return HttpResponseNotFound("<h2>Ошибочка при редактировании)</h2>")
 def sell(request, id):
         bookSell = Book.objects.get(id=id)
@@ -102,3 +108,32 @@ def sell(request, id):
 def author(request, author):
     author = Book.objects.filter(author=author)
     return render(request, 'author.html',{'author': author, 'my_date': datetime.now()})
+
+#Функции для постов
+def create_post(request):
+    if request.method == 'POST':
+        post = Post()
+        post.title = request.POST.get('title')
+        post.content = request.POST.get('content')
+        post.save()
+    return HttpResponseRedirect('/post')
+def edit_post(request, id):
+    try:
+        edit_post = Post.objects.get(id=id)
+        if request.method == 'POST':
+            edit_post.title = request.POST.get('title')
+            edit_post.content = request.POST.get('content')
+            edit_post.update_at = datetime.now()
+            edit_post.save()
+            return HttpResponseRedirect('/post')
+        else:
+            return render(request, 'Post/create.html', {'edit_post': edit_post, 'my_date': datetime.now()})
+    except Post.DoesNotExist:
+        return HttpResponseNotFound("<h2>Ошибочка при редактировании)</h2>")
+def delete_post(request, id):
+    try:
+        del_post = Post.objects.get(id=id)
+        del_post.delete()
+        return HttpResponseRedirect('/post')
+    except Post.DoesNotExist:
+        return HttpResponseNotFound('<h2>Ошибочка при удалении</h2>')
