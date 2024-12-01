@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from datetime import datetime
 
@@ -7,9 +7,11 @@ from django.urls import reverse_lazy
 from django.views.generic import UpdateView
 
 from block.management.commands.filters import Command
-from block.models import Tasks, Book, Post, Message
+from block.models import Tasks, Book, Post, Message, Poll
 from block.management.commands import filters
 from block.models.message import Author
+from block.models.poll import Option, User_poll
+from django.db.models import F
 
 
 # Create your views here.
@@ -54,7 +56,15 @@ def chat(request):
     else:
 
         return render(request, 'Message/chat.html', {'chat': chat, 'aut': aut, 'my_date': datetime.now()})
-
+def polls(request, id=None):
+    if id != None:
+        pull = Poll.objects.filter(id=id)
+        pull_all = Poll.objects.all()
+        option = Option.objects.filter(poll_id=id)
+        return render(request, 'Polls/pulls.html', {'pull': pull, 'pull_all': pull_all, 'option': option, 'my_date': datetime.now()})
+    else:
+        pull = Poll.objects.all()
+        return render(request, 'Polls/pulls.html', {'pull': pull, 'my_date': datetime.now()})
 
 ####################Функции для задачь#####################
 
@@ -169,3 +179,27 @@ def delete_post(request, id):
             return render(request, 'Post/delete_post.html', {'del_post': del_post, 'my_date': datetime.now()})
     except Post.DoesNotExist:
         return HttpResponseNotFound('<h2>Ошибочка при удалении</h2>')
+
+
+#####################################Функции для опросов##################################################
+
+
+def vote(request, pid, oid):
+    options = get_object_or_404(Option, id=oid, poll_id=pid)
+    if request.method == 'POST':
+        print(request.method.POST['poll'])
+    return HttpResponseRedirect('/polls')
+"""    ip_address = request.META.get('HTTP_X_FORWARDED_FOR')
+    if ip_address:
+        ip_address = ip_address.split(',')[0]
+    else:
+        ip_address = request.META.get('REMOTE_ADDR')
+    user_poll = User_poll.objects.all()
+    if user_poll.ip_address == ip_address and user_poll.poll_id == pid:
+        return HttpResponseNotFound('Вы уже голосовали')
+    else:
+        user_poll.ip_address = request.POST.get('ip_address')
+        user_poll.poll_id = request.POST.get('poll_id')
+        user_poll.votes_id = request.POST.get('votes_id')
+        user_poll.save()
+    """

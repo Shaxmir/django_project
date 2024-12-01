@@ -1,5 +1,8 @@
 from django.contrib import admin
-from block.models import Book, Tasks, Post
+from block.models import Book, Tasks, Post, Poll
+from block.models.poll import Option
+
+
 # Register your models here.
 
 
@@ -9,4 +12,6 @@ class UpdatePost(admin.ModelAdmin):
 
 admin.site.register(Book)
 admin.site.register(Tasks)
+admin.site.register(Poll)
+admin.site.register(Option)
 admin.site.register(Post, UpdatePost)

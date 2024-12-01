@@ -11,6 +11,11 @@ class Poll(models.Model):
 
 
 class Option(models.Model):
-    poll = models.ForeignKey(Poll, on_delete=CASCADE, related_name='options')
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='options')
     text = models.CharField(max_length=100, validators=[MinLengthValidator(10)])
     votes = models.IntegerField(default=0)
+
+class User_poll(models.Model):
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='user_poll')
+    votes = models.ForeignKey(Option, on_delete=models.CASCADE, related_name='user_votes')
+    ip_address = models.GenericIPAddressField()

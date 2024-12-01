@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %} Polls {% endblock title %}
+{% block content %}
+
+  {% if pull.count > 0 and pull.count != 1%}
+<div class="big_blog_poll">
+  {% for poll in pull %}
+  <div class="blog">
+    <div class="title-box">
+      <h3>
+        <a href="{{poll.id}}">
+        {{ poll.title }}
+        </a>
+      </h3>
+      <hr/>
+      <div class="intro">
+        {{ poll.created_at }}
+      </div>
+    </div>
+    <div class="info">
+      <span>{{ poll.description }}</span>
+  </div>
+  <div class="footer_blog">
+    <div class="icon-holder">
+      <span>
+    <i class="fa fa-comment-o">Кол. голосов:</i>
+      <span> 0 </span>
+    </div>
+  </div>
+ <div class="color-overlay"></div>
+</div>
+  {% endfor %}
+  </div>
+{% else %}
+  {% for poll in pull %}
+<div class="opross" >
+    <h2>{{ poll.title }}</h2><br>
+
+  <span>{{ poll.created_at }}</span>
+  <form action="vote/" method="POST">
+    {% csrf_token %}
+    <p>{{ poll.description }}</p><br>
+    {% for i in option %}
+  <input type="radio" name="poll" value="{{i.text}}">{{ i.text }}<br>
+    {% endfor %}
+  <input type="submit" value="Отправить">
+</form>
+</div>
+  {% endfor %}
+
+{% endif %}
+
+
+{% endblock content %}
