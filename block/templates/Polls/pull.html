@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %} Polls {% endblock title %}
+{% block content %}
+
+
+<div class="big_blog_poll">
+  {% for poll in pull %}
+<div class="opross" >
+    <h2>{{ poll.title }}</h2><br>
+
+  <span>{{ poll.created_at }}</span>
+  <form action="vote/" method="POST" >
+    {% csrf_token %}
+    <p>{{ poll.description }}</p><br>
+    {% for i in option %}
+       <input type="radio" name="answer" id={{i.poll_id}} value="{{i.id}}">{{ i.text }} | Кол. голосов: {{i.votes}}<br>
+    {% endfor %}
+  <input type="submit" value="Отправить">
+</form>
+</div>
+</div>
+  {% endfor %}
+
+
+
+{% endblock content %}

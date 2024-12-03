@@ -1,10 +1,11 @@
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from datetime import datetime
 
 from django.template.context_processors import request
 from django.urls import reverse_lazy
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, DetailView
 
 from block.management.commands.filters import Command
 from block.models import Tasks, Book, Post, Message, Poll
@@ -56,13 +57,7 @@ def chat(request):
     else:
 
         return render(request, 'Message/chat.html', {'chat': chat, 'aut': aut, 'my_date': datetime.now()})
-def polls(request, id=None):
-    if id != None:
-        pull = Poll.objects.filter(id=id)
-        pull_all = Poll.objects.all()
-        option = Option.objects.filter(poll_id=id)
-        return render(request, 'Polls/pulls.html', {'pull': pull, 'pull_all': pull_all, 'option': option, 'my_date': datetime.now()})
-    else:
+def polls(request):
         pull = Poll.objects.all()
         return render(request, 'Polls/pulls.html', {'pull': pull, 'my_date': datetime.now()})
 
@@ -184,22 +179,32 @@ def delete_post(request, id):
 #####################################Функции для опросов##################################################
 
 
-def vote(request, pid, oid):
-    options = get_object_or_404(Option, id=oid, poll_id=pid)
+def vote(request, id):
+    id = request.POST.get('answer')
+    options = get_object_or_404(Option, id=id)
+    poll_name = get_object_or_404(Poll, id=options.poll_id)
+
     if request.method == 'POST':
-        print(request.method.POST['poll'])
-    return HttpResponseRedirect('/polls')
-"""    ip_address = request.META.get('HTTP_X_FORWARDED_FOR')
-    if ip_address:
-        ip_address = ip_address.split(',')[0]
-    else:
-        ip_address = request.META.get('REMOTE_ADDR')
-    user_poll = User_poll.objects.all()
-    if user_poll.ip_address == ip_address and user_poll.poll_id == pid:
-        return HttpResponseNotFound('Вы уже голосовали')
-    else:
-        user_poll.ip_address = request.POST.get('ip_address')
-        user_poll.poll_id = request.POST.get('poll_id')
-        user_poll.votes_id = request.POST.get('votes_id')
-        user_poll.save()
-    """
+        ip_address = request.META.get('HTTP_X_FORWARDED_FOR')
+        if ip_address:
+            ip_address = ip_address.split(',')[0]
+        else:
+            ip_address = request.META.get('REMOTE_ADDR')
+        user_poll = User_poll.objects.filter(poll_id=options.poll_id, ip_address=ip_address)
+        if user_poll:
+            return HttpResponseNotFound('<h1>Вы же голосовали</h1><br><a href="/polls">Вернуться к опросам</a>')
+        else:
+            user_in = User_poll()
+            user_in.ip_address = ip_address
+            user_in.poll_id = options.poll_id
+            user_in.save()
+            options.votes = F('votes') + 1
+            options.save()
+
+    return HttpResponse('<h1>Вы проголосовали</h1><br><a href="/polls">Вернуться к опросам</a>')
+
+
+def poll_detales(request, id):
+    pull = Poll.objects.filter(id=id)
+    option = Option.objects.filter(poll_id=id)
+    return render(request, 'Polls/pull.html', {'pull': pull, 'option': option, 'my_date': datetime.now()})

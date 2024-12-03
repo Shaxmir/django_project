@@ -42,6 +42,6 @@ urlpatterns = [
     path('post/<int:id>/delete_post', views.delete_post, name='post_delete'),
     path('chat/', views.chat, name='chat'),
     path('polls/', views.polls, name='polls'),
-    path('polls/<int:id>/', views.polls, name='poll'),
-    path('polls/<int:id>/vote/', views.vote, name='poll_vote'),
+    path('polls/poll/<int:id>/', views.poll_detales, name='poll'),
+    path('polls/poll/<int:id>/vote/', views.vote, name='poll_vote'),
 ]

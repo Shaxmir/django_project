@@ -17,5 +17,4 @@ class Option(models.Model):
 
 class User_poll(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='user_poll')
-    votes = models.ForeignKey(Option, on_delete=models.CASCADE, related_name='user_votes')
     ip_address = models.GenericIPAddressField()
