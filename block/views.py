@@ -15,8 +15,7 @@ from block.models.poll import Option, User_poll
 from django.db.models import F
 
 
-# Create your views here.
-
+# Тут нужно отрефакторить код, убрать весь дублирующийся
 
 def index(request):#home page
     return render(request, 'index.html', context={"my_date": datetime.now()})
