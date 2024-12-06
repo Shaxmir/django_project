@@ -1,12 +1,10 @@
 {% extends "base.html" %}
 {% block title %} Edit Task {% endblock title %}
 {% block content %}
-<form method="POST">
-        {% csrf_token %}
-    <label>Изменения задачи</label><br>
-    <input type="text" name="title" value="{{task_edit.title}}"/><br>
-    <label>Текст:</label><br>
-    <textarea name="description">{{task_edit.description}}</textarea><br>
-    <input type="submit" value="Сохранить изменения" /><br>
+<h2>Изменить задачу</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Сохранить</button>
 </form>
     {% endblock content %}

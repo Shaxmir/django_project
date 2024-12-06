@@ -1,7 +1,7 @@
-from tkinter.constants import CASCADE
-
+from django.core.validators import MinLengthValidator
 from django.db import models
-from django.core.validators import MinLengthValidator, MaxValueValidator, MinValueValidator
+from django.urls import reverse
+
 
 class Poll(models.Model):
     title = models.CharField(max_length=50, validators=[MinLengthValidator(10)])
@@ -9,6 +9,8 @@ class Poll(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
+    def get_absolute_url(self):
+        return reverse('poll', kwargs={'page': 'polls', 'id' : self.id})
 
 class Option(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='options')

@@ -14,11 +14,32 @@
     <input type="submit" value="Сохранить книгу" /><br>
 </form>
 
+<!-- Отображение одной книги -->
+{% if books.id %}
+    <h1>{{ books.title }}</h1>
+    <p><strong>Автор:</strong> {{ books.author }}</p>
+    <p><strong>Дата публикации:</strong> {{ books.published_date }}</p>
+    <p><strong>Цена:</strong> {{ books.price }}</p>
+    <p><strong>Остаток:</strong> {{ books.stock }}</p>
+
+    <!-- Если книга доступна, отображаем ссылку на покупку -->
+    {% if books.stock > 0 %}
+        <a href="sell">Купить книгу</a>
+    {% else %}
+        <p>Книга распродана.</p>
+    {% endif %}
+
+    <!-- Ссылки для редактирования или удаления -->
+    <a href="book_edit">Изменить</a> |
+    <a href="/books">Назад к списку книг</a>
+{% endif %}
+<!-- Конец Отображение одной книги -->
+
 {% if books.count > 0 %}
 <div class="book_blocks">
 {% for form in books %}
     <div class="book_block">
-        <h4 class="book_block_title"><a href="{{form.id}}">{{ form.title }}</a></h4><br>
+        <h4 class="book_block_title"><a href="{{form.get_absolute_url }}">{{ form.title }}</a></h4><br>
         <span class="book_block_data">{{ form.published_date }}</span><br>
         <span class="book_block_text"><a href="{{form.author}}/author">{{ form.author }}</a></span><br>
         <span class="book_block_text">Цена: {{ form.price }}</span> <span class="book_span">|</span> <span class="book_block_text">Остаток: {{ form.stock }}</span>
@@ -32,11 +53,11 @@
         <br><a href="/books">Назад</a>
         {% else %}
             {% if form.stock > 0 %}
-            <a href="{{form.id}}/sell">Купить книгу</a>
+            <a href="{{form.get_absolute_url}}sell">Купить книгу</a>
             {% else %}
             <span class="book_span">Книга кончилась</span>
             {% endif %}
-            <a href="{{form.id}}/book_edit">Изменить</a>
+            <a href="{{form.get_absolute_url}}book_edit">Изменить</a>
         {% endif%}
     </div>
 {% endfor %}

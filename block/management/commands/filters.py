@@ -1,14 +1,13 @@
+from datetime import timedelta
 from django.core.management.base import BaseCommand
-from datetime import datetime
+from django.utils.timezone import now
 from block.models import Tasks
 
 
 class Command(BaseCommand):
-    BaseCommand.help = 'Фильтрация по дате. Если задаче больше 1 дня то она удаляется автоматически'
+    help = "Удаляет задачи, которым больше одного дня"
 
     def handle(self, *args, **kwargs):
-        date_now = datetime.now()
-        ex_date = Tasks.objects.filter(due_data__lt=date_now, is_completed=False)
-        count = ex_date.count()
-        ex_date.delete()
-        self.stdout.write(f'Удалено {count} записей')
+        threshold_date = now() - timedelta(days=1)
+        deleted_count, _ = Tasks.objects.filter(due_data__lt=threshold_date).delete()
+        self.stdout.write(self.style.SUCCESS(f"Удалено задач: {deleted_count}"))

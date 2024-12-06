@@ -25,10 +25,10 @@
 
         {% if post.count == 1 and post_all.count > 1%}
             <a style="color: green; padding: 5px" href="edit_post/">Изменить пост</a>
-            <a style="color: red; padding: 5px" href="delete_post">Удалить</a>
+            <a style="color: red; padding: 5px" href="delete_post/">Удалить</a>
             {% else %}
-            <a style="color: green; padding: 5px" href="{{form.id}}/edit_post">Изменить пост</a>
-            <a style="color: red; padding: 5px" href="{{form.id}}/delete_post">Удалить</a>
+            <a style="color: green; padding: 5px" href="{{form.id}}/edit_post/">Изменить пост</a>
+            <a style="color: red; padding: 5px" href="{{form.id}}/delete_post/">Удалить</a>
             {% endif %}
     </div>
 {% endfor %}

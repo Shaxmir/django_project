@@ -1,65 +1,305 @@
-
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from datetime import datetime
+from typing import List
 
-from django.template.context_processors import request
+from django.db.models import F
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, JsonResponse, Http404
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import UpdateView, DetailView
+from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
 
+from block.forms.forms import TasksForm, BookForm, MessageForm, PostForm, PollForm, OptionForm
 from block.management.commands.filters import Command
 from block.models import Tasks, Book, Post, Message, Poll
-from block.management.commands import filters
-from block.models.message import Author
 from block.models.poll import Option, User_poll
-from django.db.models import F
 
 
-# Create your views here.
+# Класс для вывода всех страниц
+class BasePage(TemplateView):
+    """Обработка динамических страниц в зависимости от переданного параметра `page` в URL"""
+
+    template_mapping = {
+        'index': 'index.html',
+        'about': 'about.html',
+        'catalog': 'catalog.html',
+        'contact': 'contacts.html',
+        'task' : 'Tasks/task.html',
+        'post' : 'Post/posts.html',
+        'books' : 'Books/books.html',
+        'chat' : 'Message/chat.html',
+        'polls' : 'Polls/pulls.html'
+    }
+    def get_template_names(self) -> List[str]:
+        """
+        Возвращает список шаблонов в зависимости от переданного параметра `page` в URL.
+
+        Если страница не найдена в словаре шаблонов, выбрасывает ошибку 404.
+        """
+        # Получаем параметр 'page' из URL или используем 'index' по умолчанию
+        page = self.kwargs.get('page', 'index')
+        # Если шаблон не найден, выбрасываем ошибку 404
+        template = self.template_mapping.get(page)
+        if not template:
+            raise Http404(f"Page '{page}' not found. Please check the URL or return to the <a href='/'>home page</a>.")
+        # Возвращаем список шаблонов (даже если один шаблон, нужно вернуть список)
+        return [template]
+
+    def get_context_data(self, **kwargs):
+        """
+        Добавляет текущую дату в контекст, чтобы она отображалась на всех страницах.
+        """
+
+        # Получаем контекст от родительского класса
+        context = super().get_context_data(**kwargs)
+        # Добавляем текущую дату в контекст
+        context['my_date'] = datetime.now()
+
+        page = self.kwargs.get('page')
+        filter = self.request.GET.get('filter')
 
 
-def index(request):#home page
-    return render(request, 'index.html', context={"my_date": datetime.now()})
-def about(request):#about page
-    return render(request, 'about.html', context={"my_date": datetime.now()})
-def сatalog(request):#catalog shop page
-    return render(request, 'catalog.html', context={"my_date": datetime.now()})
-def contact(request):#contact page
-    return render(request, 'contacts.html', context={"my_date": datetime.now()})
-def task(request):
-    task = Tasks.objects.all()
-    return render(request, 'Tasks/task.html', {'task': task,"my_date": datetime.now()})
-def books(request, id=None):
-    if id != None:
-        books = Book.objects.filter(id=id)
-        return render(request, 'Books/books.html', {'books': books, 'my_date': datetime.now()})
-    else:
-        books = Book.objects.all()
-        return render(request, 'Books/books.html', {'books': books, 'my_date': datetime.now()})
-def post(request, id=None):
-    if id != None:
-        post = Post.objects.filter(id=id)
-        post_all = Post.objects.all()
-        return render(request, 'Post/posts.html', {'post': post, 'post_all': post_all, 'my_date': datetime.now()})
-    else:
-        post = Post.objects.all()
-        return render(request, 'Post/posts.html', {'post': post, 'my_date': datetime.now()})
+        if page == 'task':
+            if filter == 'true':
+                # Показывать только выполненные задачи
+                tasks = Tasks.objects.filter(is_completed=True).order_by('-is_completed')
+                print('TRUE')
+            elif filter == 'false':
+                # Показывать только невыполненные задачи
+                tasks = Tasks.objects.filter(is_completed=False).order_by('is_completed')
+                print('FALSE')
+            else:
+                # Показывать все задачи
+                tasks = Tasks.objects.all()
+                print('NICIGO')
 
-def chat(request):
-    chat = Message.objects.all().order_by('-create_at')
-    aut = Author.objects.all()
-    if request.method == 'POST':
-        author = Author.objects.create(author=request.POST.get('author'))
-        mess = Message(content=request.POST.get('content'))
-        author.message = mess
-        author.message.save()
-        return HttpResponseRedirect('/chat')
-    else:
+            context['task'] = tasks
+        else:
+            # Словарь для других данных
+            data_fetchers = {
+                'books': Book.objects.all(),
+                'chat': Message.objects.all(),
+                'post': Post.objects.all(),
+                'polls': Poll.objects.all(),
+            }
 
-        return render(request, 'Message/chat.html', {'chat': chat, 'aut': aut, 'my_date': datetime.now()})
-def polls(request):
-        pull = Poll.objects.all()
-        return render(request, 'Polls/pulls.html', {'pull': pull, 'my_date': datetime.now()})
+            fetch_data = data_fetchers.get(page, [])
+            context[page] = fetch_data
+
+        return context
+
+
+
+# Класс для вывода деталей
+class ObjectDetailView(TemplateView):
+    template_mapping = {
+        'books': 'Books/books.html',
+        'task': 'Tasks/tasks.html',
+        'post': 'Post/posts.html',
+        'chat': 'Message/chat.html',
+        'polls': 'Polls/pull.html',
+    }
+
+    model_mapping = {
+        'books': Book,
+        'task': Tasks,
+        'post': Post,
+        'chat': Message,
+        'polls': Poll,
+    }
+
+    def get_template_names(self) -> List[str]:
+        page = self.kwargs.get('page')
+        template = self.template_mapping.get(page)
+        if not template:
+            raise Http404(f"Page '{page}' not found.")
+        return [template]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['my_date'] = datetime.now()
+        page = self.kwargs.get('page')
+        object_id = self.kwargs.get('id')
+
+        model = self.model_mapping.get(page)
+        if not model:
+            raise Http404(f"Model for page '{page}' not found.")
+
+        try:
+            context['books'] = model.objects.get(id=object_id)
+            print('ID: ', object_id, 'PAGE: ', page, 'MODEL: ', model.objects.get(id=object_id), 'MODEL NAME: ', model )
+
+        except model.DoesNotExist:
+            raise Http404(f"Object with id {object_id} not found in '{page}'.")
+
+        return context#
+
+
+# Класс для создания объектов в БД
+class CreatedMaster(CreateView):
+
+    model_mapping = {
+        'task': Tasks,
+        'book': Book,
+        'post': Post,
+        'chat': Message,
+        'poll': Poll
+    }
+    template_mapping = {
+        'task': 'Tasks/create.html',
+        'book': 'Books/create.html',
+        'post': 'Post/create.html',
+        'chat': 'Message/create.html',
+        'poll': 'Polls/create.html',
+    }
+    form_mapping = {
+        'task': TasksForm,
+        'book': BookForm,
+        'chat': MessageForm,
+        'post': PostForm,
+        'poll': PollForm,
+        'option': OptionForm
+    }
+
+    def get_template_names(self):
+
+        page = self.kwargs.get('page')
+        template = self.template_mapping.get(page)
+        if not template:
+            raise Http404('Нет такой страницы!')
+        return [template]
+
+    def get_form_class(self):
+        page = self.kwargs.get('page')
+        form_class = self.form_mapping.get(page)
+
+        if not form_class:
+            raise Http404('Проблема с формой')
+        return form_class
+
+    def get_model(self):
+        page = self.kwargs.get('page')
+        model = self.model_mapping.get(page)
+        if not model:
+            raise Http404('Модель не найдена. ОШИБКА!!!')
+        return model
+
+    def get_success_url(self):
+        page = self.kwargs.get('page')
+        return reverse_lazy('pages', kwargs={'page': page})
+
+
+# Класс для редактирования объектов БД
+class EditMaster(UpdateView):
+    model_mapping = {
+        'task': Tasks,
+        'book': Book,
+        'post': Post,
+        'chat': Message,
+        'poll': Poll
+    }
+    template_mapping = {
+        'task': 'Tasks/edit.html',
+        'book': 'Books/edit.html',
+        'post': 'Post/edit.html',
+        'chat': 'Message/edit.html',
+        'poll': 'Polls/edit.html',
+    }
+    form_mapping = {
+        'task': TasksForm,
+        'book': BookForm,
+        'chat': MessageForm,
+        'post': PostForm,
+        'poll': PollForm,
+        'option': OptionForm
+    }
+
+    def get_template_names(self):
+
+        page = self.kwargs.get('page')
+        template = self.template_mapping.get(page)
+        if not template:
+            raise Http404('Нет такой страницы!')
+        return [template]
+
+    def get_form_class(self):
+        page = self.kwargs.get('page')
+        form_class = self.form_mapping.get(page)
+
+        if not form_class:
+            raise Http404('Проблема с формой')
+        return form_class
+
+    def get_model(self):
+        page = self.kwargs.get('page')
+        model = self.model_mapping.get(page)
+        if not model:
+            raise Http404('Модель не найдена. ОШИБКА!!!')
+        return model
+
+    def get_object(self):
+        # Получаем объект по ID для редактирования
+        model = self.get_model()
+        pk = self.kwargs.get('id')
+        return model.objects.get(id=pk)
+
+
+
+    def get_success_url(self):
+        page = self.kwargs.get('page')
+        return reverse_lazy('pages', kwargs={'page': page})
+
+
+
+# Класс которым удаляем объекты из БД
+class DeleteMaster(DeleteView):
+    model_mapping = {# Указываем модель, с которой работает класс
+        'task': Tasks,
+        'book': Book,
+        'post': Post,
+        'chat': Message,
+        'poll': Poll
+    }
+    template_mapping = {# Шаблон для подтверждения удаления
+        'task': 'Tasks/delete.html',
+        'book': 'Books/delete.html',
+        'post': 'Post/delete.html',
+        'chat': 'Message/delete.html',
+        'poll': 'Polls/delete.html',
+    }
+    def get_template_names(self):
+        """
+            Находим страницу
+        """
+        page = self.kwargs.get('page')
+        template = self.template_mapping.get(page)
+        if not template:
+            raise Http404('Нет такой страницы!')
+        return [template]
+
+    def get_model(self):
+        """
+            Находим модель по названию `page`
+        """
+        page = self.kwargs.get('page')
+        model = self.model_mapping.get(page)
+        if not model:
+            raise Http404('Модель не найдена. ОШИБКА!!!')
+        return model
+
+    def get_object(self):
+        """
+            Находим объект по переданному ID
+        """
+        model = self.get_model()
+        pk = self.kwargs.get('id')
+        return model.objects.get(id=pk)
+
+    def get_success_url(self):
+        page = self.kwargs.get('page')
+        return reverse_lazy('pages', kwargs={'page': page})
+
+
+
+
 
 ####################Функции для задачь#####################
 
@@ -69,13 +309,17 @@ def handle(request):
     filter.handle(handle_task)
     return HttpResponseRedirect('/task')
 
+
 def create(request):
     if request.method == 'POST':
         task_create = Tasks()
         task_create.title = request.POST.get('title')
         task_create.description = request.POST.get('description')
+        task_create.full_clean()
         task_create.save()
     return HttpResponseRedirect('/task')
+
+
 def edit(request, id):
     try:
         task_edit = Tasks.objects.get(id=id)
@@ -83,14 +327,16 @@ def edit(request, id):
         if request.method == 'POST':
             task_edit.title = request.POST.get('title')
             task_edit.description = request.POST.get('description')
+            task_edit.full_clean()
             task_edit.save()
             return HttpResponseRedirect('/task')
         else:
-            return render(request, 'Tasks/edit.html',{'task_edit':task_edit})
+            return render(request, 'Tasks/edit.html', {'task_edit': task_edit})
     except Tasks.DoesNotExist:
         return HttpResponseNotFound("<h2>Ошибочка при редактировании</h2>")
 
-def delete(request,id):
+
+def delete(request, id):
     try:
         task_delete = Tasks.objects.get(id=id)
         task_delete.delete()
@@ -110,6 +356,8 @@ def add_book(request):
         book_add.stock = request.POST.get('stock')
         book_add.save()
     return HttpResponseRedirect('/books')
+
+
 def book_edit(request, id):
     try:
         bookEdit = Book.objects.get(id=id)
@@ -124,21 +372,23 @@ def book_edit(request, id):
             return render(request, 'Books/book_edit.html', {'bookEdit': bookEdit, 'my_date': datetime.now()})
     except Book.DoesNotExist:
         return HttpResponseNotFound("<h2>Ошибочка при редактировании)</h2>")
+
+
 def sell(request, id):
-        bookSell = Book.objects.get(id=id)
-        if bookSell.stock > 0:
-            bookSell.stock -= 1
-            bookSell.save()
-            return JsonResponse({'success': True, 'message': 'Книга продана'})
-        return JsonResponse({'success': False, 'message': 'Книга кончилась'})
+    bookSell = Book.objects.get(id=id)
+    if bookSell.stock > 0:
+        bookSell.stock -= 1
+        bookSell.save()
+        return JsonResponse({'success': True, 'message': 'Книга продана'})
+    return JsonResponse({'success': False, 'message': 'Книга кончилась'})
+
+
 def author(request, author):
     author = Book.objects.filter(author=author)
-    return render(request, 'author.html',{'author': author, 'my_date': datetime.now()})
+    return render(request, 'author.html', {'author': author, 'my_date': datetime.now()})
+
 
 ################### Функции для постов ############################
-
-
-
 
 
 def create_post(request):
@@ -151,6 +401,8 @@ def create_post(request):
         return HttpResponseRedirect('/post')
     else:
         return render(request, 'Post/create.html', {'edit_post': edit_post, 'my_date': datetime.now()})
+
+
 def edit_post(request, id):
     try:
         edit_post = Post.objects.get(id=id)
@@ -164,6 +416,8 @@ def edit_post(request, id):
             return render(request, 'Post/edit.html', {'edit_post': edit_post, 'my_date': datetime.now()})
     except Post.DoesNotExist:
         return HttpResponseNotFound("<h2>Ошибочка при редактировании)</h2>")
+
+
 def delete_post(request, id):
     try:
         del_post = Post.objects.get(id=id)

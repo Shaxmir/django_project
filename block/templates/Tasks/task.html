@@ -1,23 +1,30 @@
 {% extends "base.html" %}
 {% block title %} Task {% endblock title %}
 {% block content %}
-<form method="POST" action="create/">
-        {% csrf_token %}
-    <label>Название задачи</label><br>
-    <input type="text" name="title" /><br>
-    <label>Текст:</label><br>
-    <textarea name="description"></textarea><br>
-    <input type="submit" value="Сохранить задачу" /><br>
+
+<div>
+    <a class="task_create_btn" href="create/">Создать задачу</a>
+</div>
+<h2>Ваши задачи:</h2>
+<form method="get">
+    <button type="submit" name="filter" value="true" {% if request.GET.filter == 'true' %}class="selected"{% endif %}>Показать законченные</button>
+    <button type="submit" name="filter" value="false" {% if request.GET.filter == 'false' %}class="selected"{% endif %}>Показать не законченные</button>
+    <button type="submit" name="filter" value="" {% if not request.GET.filter %}class="selected"{% endif %}>Показать все</button>
 </form>
 {% if task.count > 0 %}
-<h2>Ваши задачи:</h2> <a href="handle" class="filter_handle">Удалить все просроченные задачи!</a>
+
 <div class="task_blocks">
 {% for form in task %}
     <div class="task_block">
         <h4 class="task_block_title">{{ form.title }}</h4><br>
         <span class="task_block_data">{{ form.due_data }}</span><br>
         <span class="task_block_text">{{ form.description }}</span><br>
-        <a href="{{form.id}}/edit">Изменить</a> <span class="chort">|</span> <a href="{{form.id}}/delete">Удалить</a> <span class="chort">|</span> <a href="{{form.id}}/handle">Просрочено</a>
+        <a href="{{form.id}}/edit">Изменить</a> <span class="chort">|</span> <a href="{{form.id}}/delete">Удалить</a>
+        {% if form.is_completed == True %}
+        <br><span style="color: green; font-size: 20px; display: block; padding: 10px; text-align: end;"> Законченная задача!</span>
+        {% else %}
+        <br><span style="color: red; font-size: 20px; display: block; padding: 10px; text-align: end;"> Задача не закончена! </span>
+        {% endif %}
     </div>
 {% endfor %}
     {% else %}

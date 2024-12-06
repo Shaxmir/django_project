@@ -5,7 +5,6 @@ from django.core.validators import MinLengthValidator, MaxValueValidator, MinVal
 
 class Post(models.Model):
     title = models.CharField(max_length=200, validators=[MinLengthValidator(5)])
-    #slugs = models.SlugField(max_length=255, db_index=True, unique=True)
     content = models.TextField(max_length=1024, validators=[MinLengthValidator(5)])
     created_at = models.DateTimeField(auto_now_add=True, help_text='Дата при создании')
     updated_at = models.DateTimeField(auto_now=True, help_text='Дата изменении')
