@@ -1,19 +1,28 @@
 {% extends "base.html" %}
 {% block title %} Posts {% endblock title %}
 {% block content %}
-{% if post.count == 1 and post_all.count > 1 %}
-<a href="/post">Назад к постам</a>
+<!-- Отображение Одного поста -->
+{% if post.id %}
+    <h1>{{ post.title }}</h1>
+    <p><strong>Текст:</strong> {{ post.content }}</p>
+    <p><strong>Дата публикации:</strong> {{ post.created_at }}</p>
+    <p><strong>Дата редактирования:</strong> {{ post.updated_at }}</p>
+
+    <!-- Ссылки для редактирования или удаления -->
+    <a style="color: green; padding: 5px" href="edit_post/">Изменить пост</a>
+    <a style="color: red; padding: 5px" href="delete_post/">Удалить</a>
 {% endif %}
+<!-- Конец Отображение одной книги -->
+
+
+
+
 {% if post.count > 0 %}
 <div class="post_blocks">
 {% for form in post %}
     <div class="post_block">
         <h4 class="post_block_title">
-            {% if post.count == 1 and post_all.count > 1 %}
-            {{ form.title }}
-            {% else %}
             <a href="{{form.id}}">{{ form.title }}</a>
-            {% endif %}
         </h4><br>
         <span class="post_block_data">{{ form.created_at }}</span><br>
         {% if form.updated_at %}

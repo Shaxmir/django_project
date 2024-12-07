@@ -1,18 +1,11 @@
 {% extends "base.html" %}
-{% block title %} Books {% endblock title %}
+{% block title %} Edit Task {% endblock title %}
 {% block content %}
-<form method="POST">
-        {% csrf_token %}
-    <label>Название Книги</label><br>
-    <input type="text" name="title" value="{{bookEdit.title}}"/><br>
-    <label>Автор Книги</label><br>
-    <input type="text" name="author" value="{{bookEdit.author}}"/><br>
-    <label>Количество книг</label><br>
-    <input type="number" name="stock" value="{{bookEdit.stock}}"/><br>
-    <label>Цена за одну книгу</label><br>
-    <input type="number" name="price" value="{{bookEdit.price}}"/><br>
-    <input type="submit" value="Сохранить изменения" /><br>
+<a href="/books">Назад/Отмена</a>
+<h2>Изменить книгу</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Сохранить</button>
 </form>
-
-
-{% endblock content %}
+    {% endblock content %}

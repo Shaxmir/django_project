@@ -23,19 +23,25 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', BasePage.as_view(), name='page'),
     path('<str:page>/', BasePage.as_view(), name='pages'),
+    # Задачи
     path('<str:page>/filter', BasePage.as_view(), name='filter'),
-    path('<str:page>/handle/', BasePage.as_view(), name='task_handle'),
     path('<str:page>/create/', CreatedMaster.as_view(), name='task_create'),
     path('<str:page>/<int:id>/edit/', EditMaster.as_view(), name='taks_edit'),
     path('<str:page>/<int:id>/delete/', DeleteMaster.as_view(), name='task_del'),
-    path('<str:page>/<int:id>/', ObjectDetailView.as_view(), name='books'),
+    # Книги
+    path('<str:page>/<int:id>/', ObjectDetailView.as_view(), name='book'),
+    path('<str:page>/create/', CreatedMaster.as_view(), name='books_create'),
     path('<str:page>/add_book/', BasePage.as_view(), name='book_add'),
-    path('<str:page>/<str:author>/author/', BasePage.as_view(), name='filet_book_aut'),
-    path('<str:page>/<int:id>/book_edit/', BasePage.as_view(), name='book_edit'),
-    path('<str:page>/<int:id>/sell/', BasePage.as_view(), name='book_sell'),
-    path('<str:page>/create_post/', BasePage.as_view(), name='post_create'),
-    path('<str:page>/<int:id>/edit_post/', BasePage.as_view(), name='post_edit'),
-    path('<str:page>/<int:id>/delete_post', BasePage.as_view(), name='post_delete'),
+    path('books/<str:author>/author/', BasePage.as_view(), name='filet_book_aut'),
+    path('<str:page>/<int:id>/book_edit/', EditMaster.as_view(), name='book_edit'),
+    path('books/<int:id>/sell/', views.sell, name='book_sell'),
+    # Посты
+    #path('<str:page>/<int:id>/', ObjectDetailView.as_view(), name='book'),
+    path('<str:page>/create_post/', CreatedMaster.as_view(), name='post_create'),
+    path('<str:page>/<int:id>/edit_post/', EditMaster.as_view(), name='post_edit'),
+    path('<str:page>/<int:id>/delete_post/', DeleteMaster.as_view(), name='post_delete'),
+    # Опрос
     path('<str:page>/poll/<int:id>/', BasePage.as_view(), name='poll'),
     path('<str:page>/poll/<int:id>/vote/', BasePage.as_view(), name='poll_vote'),
+    # Чат
 ]

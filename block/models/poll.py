@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator
 from django.db import models
 from django.urls import reverse
@@ -13,7 +14,7 @@ class Poll(models.Model):
         return reverse('poll', kwargs={'page': 'polls', 'id' : self.id})
 
 class Option(models.Model):
-    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='options')
+    poll = models.ForeignKey(User, on_delete=models.CASCADE, related_name='options')
     text = models.CharField(max_length=100, validators=[MinLengthValidator(10)])
     votes = models.IntegerField(default=0)
 

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %} Create Book{% endblock title %}
+{% block content %}
+<a href="/books">Назад/Отмена</a>
+  <h2>Создать книгу</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Создать товар</button>
+  </form>
+
+{% endblock %}

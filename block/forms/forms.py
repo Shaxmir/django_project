@@ -1,4 +1,7 @@
 from django import forms
+from django.core.exceptions import ValidationError
+from django.core.validators import MinLengthValidator
+
 from block.models import Tasks, Book, Message, Poll, Post
 from block.models.poll import Option
 
@@ -14,14 +17,6 @@ class TasksForm(forms.ModelForm):
             'is_completed': 'Выполнено',
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Устанавливать начальные значения через instance не нужно, они будут установлены автоматически.
-        if self.instance and self.instance.pk:
-            # Эти строки можно оставить, если хотите контролировать видимость поля или другие атрибуты.
-            self.fields['title'].widget.attrs['placeholder'] = 'Название задачи'
-            self.fields['description'].widget.attrs['placeholder'] = 'Описание задачи'
-
 
 
 class BookForm(forms.ModelForm):
@@ -36,13 +31,14 @@ class BookForm(forms.ModelForm):
             'stock': 'Количество книг',
         }
 
+
+
 class MessageForm(forms.ModelForm):
     class Meta:
         model = Message
-        fields = ['author', 'content']
+        fields = ['content']
 
         labels = {
-            'author': 'Автор',
             'content': 'Сообщение',
         }
 
@@ -56,6 +52,10 @@ class PollForm(forms.ModelForm):
             'description': 'Описание',
             'is_active': 'Активное',
         }
+
+
+
+
 class OptionForm(forms.ModelForm):
     class Meta:
         model = Option
@@ -70,8 +70,24 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ['title', 'content']
-
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введите заг. (200сим)'
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введите текст (1024)',
+                'rows': 5
+            }),
+        }
         labels = {
             'title': 'Название',
-            'text': 'Описание',
+            'content': 'Описание',
         }
+
+
+
+
+
+

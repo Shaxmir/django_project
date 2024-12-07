@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %} Chat {% endblock title %}
 {% block link %}
-<script>setInterval(() => window.location.reload(), 5000);</script>
+<script>setInterval(() => window.location.reload(), 5000000);</script>
 {% endblock link %}
 {% block content %}
 <h2>Напишите сообщение в чат</h2>
@@ -17,8 +17,8 @@
 {% if chat.count > 0 %}
 {% for user in chat %}
 <div class="chat_post">
-    <h4 class="chat_post_aut">{{ user.author.author }}</h4>
-    <span class="chat_post_date" style="font-size: 10px">{{ user.create_at }}</span>
+    <h4 class="chat_post_aut">{{ user.author.username }}</h4>
+    <span class="chat_post_date" style="font-size: 10px">{{ user.created_at }}</span>
     <p class="chat_post_text">{{ user.content }}</p>
 </div>
 {% endfor %}

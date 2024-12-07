@@ -10,5 +10,6 @@ class Book(models.Model):
     price = models.DecimalField(max_digits=19, decimal_places=2)
     stock = models.IntegerField()
 
+
     def get_absolute_url(self):
-        return reverse('books', kwargs={'page': 'books', 'id' : self.id})
+        return reverse('book', kwargs={'page': 'books', 'id' : self.id})

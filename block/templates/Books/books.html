@@ -1,18 +1,8 @@
 {% extends "base.html" %}
 {% block title %} Books {% endblock title %}
 {% block content %}
-<form method="POST" action="add_book/">
-        {% csrf_token %}
-    <label>Название Книги</label><br>
-    <input type="text" name="title" /><br>
-    <label>Автор Книги</label><br>
-    <input type="text" name="author" /><br>
-    <label>Количество книг</label><br>
-    <input type="number" name="stock" /><br>
-    <label>Цена за одну книгу</label><br>
-    <input type="number" name="price"/><br>
-    <input type="submit" value="Сохранить книгу" /><br>
-</form>
+<a href="/books/create/"><h2>Создать новую книгу</h2></a><br>
+
 
 <!-- Отображение одной книги -->
 {% if books.id %}
@@ -37,12 +27,28 @@
 
 {% if books.count > 0 %}
 <div class="book_blocks">
+    <h4>Фильтрация по автору и цене</h4>
+    <form method="get" action="{% url 'pages' page='books' %}">
+        <input type="text" list="options" name="author" placeholder="Введите автора" value="{{ request.GET.author }}">
+          <datalist id="options">
+              {% for aut in books %}
+              <option value="{{aut.author}}">
+              {% endfor %}
+          </datalist>
+        <button type="submit">Посмотреть книги автора</button>
+    </form>
+    <br>
+    <form method="get" action="{% url 'pages' page='books' %}">
+        <button type="submit" name="price"  value="true" {% if request.GET.filter == 'true' %}class="selected"{% endif %}>Сначала по дороже</button>
+        <button type="submit" name="price" value="false" {% if request.GET.filter == 'false' %}class="selected"{% endif %}>Нищеброд</button>
+    </form>
+    <br>
 {% for form in books %}
     <div class="book_block">
         <h4 class="book_block_title"><a href="{{form.get_absolute_url }}">{{ form.title }}</a></h4><br>
         <span class="book_block_data">{{ form.published_date }}</span><br>
-        <span class="book_block_text"><a href="{{form.author}}/author">{{ form.author }}</a></span><br>
-        <span class="book_block_text">Цена: {{ form.price }}</span> <span class="book_span">|</span> <span class="book_block_text">Остаток: {{ form.stock }}</span>
+        <span class="book_block_text">{{ form.author }}</span><br>
+        <span class="book_block_text">Цена: {{ form.price }}</span> <span class="book_span">|</span> <span class="book_block_text">Остаток: {{ form.stock }}</span><br>
         {% if books.count == 1 %}
         {% if form.stock > 0 %}
         <br><a href="sell/">Купить книгу</a>
